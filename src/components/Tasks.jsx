@@ -5,9 +5,9 @@ import { useState } from "react";
 
 
 export default function Tasks(props) {
-  const tasks = props.taskList;
-  const setTasks = props.setTasks
-  const [showOnlyDone, setShowOnlyDone] = useState(false);
+
+const {tasks, setTasks} = props
+
 
   const deleteTask = (id) => {
     setTasks(
@@ -21,15 +21,12 @@ export default function Tasks(props) {
     );
   };
 
-  const toggleShowOnlyDone = () => {
-    setShowOnlyDone(!showOnlyDone);
-  };
+  const filteredTasks = tasks.filter((t)=> !t.deleted && (!props.showOnlyDone || t.done))
+
 
   return (
-    <>
       <div id="todo-list">
-        {tasks
-          .filter((t) => !t.deleted && (!showOnlyDone || t.done))
+        {filteredTasks
           .map((t) => (
             <Task
               key={t.id}
@@ -41,9 +38,5 @@ export default function Tasks(props) {
             />
           ))}
       </div>
-      <button className="toggleDone" onClick={toggleShowOnlyDone}>
-        {showOnlyDone ? "Show All" : "Show Only Done"}
-      </button>
-    </>
   );
 }

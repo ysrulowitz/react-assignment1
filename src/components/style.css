@@ -355,3 +355,14 @@ body {
     background-color: #8a8a8aca;
 
   }
+
+  .error-input {
+    border: 1px solid red !important;
+  }
+  .error-message{
+    color: red;
+    font-size: small;
+    margin-left: 5px;
+    margin-top: -5px;
+  }
+  
