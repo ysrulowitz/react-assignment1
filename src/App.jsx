@@ -4,28 +4,18 @@ import { useState } from "react";
 import { useEffect } from "react";
 
 // const taskList = [{ title: "one", done: false, id: 1, deleted: false }];
-let taskList = [];
-let userNames = [];
-
-
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [name, setName] = useState("");
-  const [tasks, setTasks] = useState(taskList);
+  const [tasks, setTasks] = useState([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [showOnlyDone, setShowOnlyDone] = useState(false);
 
   async function main() {
     let response = await fetch("http://localhost:3000/tasks");
-    taskList = await response.json();
-    setTasks(taskList)
-    console.log(taskList);
-  
-    let response2 = await fetch("http://localhost:3000/userNames");
-    userNames = await response2.json();
-    console.log(userNames);
-  
+    setTasks(await response.json())
+    console.log(tasks);
   }
 
   const updateTasks = (updatedTaskList) => {
