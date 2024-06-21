@@ -8,6 +8,7 @@ import { useEffect } from "react";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [name, setName] = useState("");
+  const [id, setId] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [showOnlyDone, setShowOnlyDone] = useState(false);
@@ -30,26 +31,42 @@ function App() {
     setShowOnlyDone(!showOnlyDone);
   };
 
-  const addNewTask = () => {
+  const addNewTask = async() => {
     if (newTaskTitle.trim() !== "") {
       const newTask = {
+        userId: id,
         title: newTaskTitle,
         done: false,
-        id: tasks.length + 1,
-        deleted: false,
       };
-      setTasks([...tasks, newTask]);
+
+      const response = await fetch("http://localhost:3000/tasks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newTask),
+      });
+      const result = await response.json();
+      result.userId = id 
+      setTasks((prevTasks) => [...prevTasks, result]);
       setNewTaskTitle("");
+
+
+      console.log("res",result);
+      console.log("tasks",tasks)
     }
   };
 
-  const handleLogin = (userName) => {
+  const handleLogin = (userName, userId) => {
     setName(userName);
+    setId(userId)
     setIsLoggedIn(true);
   };
 
   useEffect(() => main(), []); // Empty dependency array ensures this runs only once on mount
-
+  // useEffect(() => {
+  //   console.log("tasks updated", tasks);
+  // }, [tasks]);
   return (
     <>
       {isLoggedIn ? (
@@ -69,7 +86,8 @@ function App() {
             </button>
           </div>
           <Tasks
-            tasks={tasks}
+            id = {id}
+            tasks={tasks.filter((t)=>t.userId === id)}
             setTasks={updateTasks}
             showOnlyDone={showOnlyDone}
           />

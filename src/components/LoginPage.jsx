@@ -6,45 +6,76 @@ const users = [{ name: "yidi", password: 1111 }];
 export default function Login(props) {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loadingLogin, setLoadingLogin] = useState(false);
+  const [loadingCreate, setLoadingCreate] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async (event) => {
+  const handleAuth = async (create, url, body, succesMsg, errMsg) => {
     event.preventDefault();
 
     if (name && password) {
-      setLoading(true);
+      if (create) {
+        setLoadingCreate(true);
+      } else {
+        setLoadingLogin(true);
+      }
       setError("");
 
       try {
-        const response = await fetch("http://localhost:3000/login", {
+        const response = await fetch(url, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ name: name, pass: password }),
+          body: JSON.stringify(body),
         });
 
         const result = await response.json();
-
+        console.log(result);
         if (result.ok === true) {
-          console.log(result);
-
-          props.onLogin(name);
+          props.onLogin(name, result.user.id);
+        } else if (create) {
+          props.onLogin(name, result.id);
         } else {
-          setError("forgot your name or password?");
+          setError(succesMsg);
         }
       } catch (error) {
-        setError("fail to log in");
+        console.log(error);
+        setError(errMsg);
       } finally {
-        setLoading(false);
+        if (create) {
+          setLoadingCreate(false);
+        } else {
+          setLoadingLogin(false);
+        }
       }
-    } else if(name) {
+    } else if (name) {
       setError("please enter a valid password");
+    } else {
+      setError("please enter a valid username");
     }
-    else{
-      setError("please enter a valid username")
-    }
+  };
+
+  const handleLogin = (event) => {
+    event.preventDefault();
+    handleAuth(
+      false,
+      "http://localhost:3000/login",
+      { name: name, pass: password },
+      "forgot your name or password?",
+      "Failed to log in. Try again later."
+    );
+  };
+
+  const handleCreateAccount = (event) => {
+    event.preventDefault();
+    handleAuth(
+      true,
+      "http://localhost:3000/users",
+      { name: name, pass: password },
+      "",
+      "Failed to create account. Please try again."
+    );
   };
 
   return (
@@ -68,14 +99,15 @@ export default function Login(props) {
         required
       />
 
-{error && <div className="error-message">{error}</div>}
-
+      {error && <div className="error-message">{error}</div>}
 
       <div className="login-btn-container">
         <button id="login-btn" onClick={handleLogin}>
-        {loading ? "Logging In..." : "Login"}
+          {loadingLogin ? "Logging In..." : "Login"}
         </button>
-        <button id="create-account-btn">Create Account</button>
+        <button id="create-account-btn" onClick={handleCreateAccount}>
+          {loadingCreate ? "Creating Account..." : "Create Account"}
+        </button>
       </div>
     </div>
   );

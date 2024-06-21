@@ -9,13 +9,36 @@ export default function Tasks(props) {
 const {tasks, setTasks} = props
 
 
-  const deleteTask = (id) => {
+  const deleteTask = async(id) => {
+    const response = await fetch(`http://localhost:3000/tasks/${id}`, {
+        method: "delete",
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({userId: props.id})
+      });
+
+      const result = await response.json();
+      console.log(result);
+
     setTasks(
       tasks.map((task) => (task.id === id ? { ...task, deleted: true } : task))
     );
   };
 
-  const doneTask = (id) => {
+  const doneTask = async(id) => {
+
+    const response = await fetch(`http://localhost:3000/tasks/${id}`, {
+        method: "PATCH",
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({userId: props.id})
+      });
+
+      const result = await response.json();
+      console.log(result);
+
     setTasks(
       tasks.map((task) => (task.id === id ? { ...task, done: true } : task))
     );

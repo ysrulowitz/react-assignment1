@@ -38,6 +38,8 @@ app.get('/', (req, res) => {
 app.get('/tasks', async (req, res) => {
     const result = await db.manyOrNone('select * from todoapp.task where deleted_at is null')
     res.json(result.map(task => ({ id: task.id, userId: task.user_id, title: task.title, done: task.status !== 'active'})))
+    console.log('result', result)
+
 })
 
 app.post('/tasks', async (req, res) => {
@@ -49,7 +51,7 @@ app.post('/tasks', async (req, res) => {
     res.json({
         title: result.title,
         done: false,
-        id: result.id
+        id: result.id,
     })
 })
 
@@ -63,6 +65,8 @@ app.patch('/tasks/:id', async (req, res) => {
     }else{
         res.json({ok: false, error: "no task for current user"})
     }
+    console.log('result', result)
+
 })
 
 app.delete('/tasks/:id', async (req, res) => {
@@ -75,6 +79,8 @@ app.delete('/tasks/:id', async (req, res) => {
     }else{
         res.json({ok: false, error: "no task for current user"})
     }
+    console.log('result', result)
+
 })
 
 app.post('/users', async (req, res) => {
@@ -84,6 +90,8 @@ app.post('/users', async (req, res) => {
        pass: req.body.pass
     })
     res.json(results)
+    console.log('result', results)
+
 })
 
 app.post('/login', async (req, res) => {
@@ -99,6 +107,8 @@ app.post('/login', async (req, res) => {
         
     }
     res.json({ ok: false });
+    console.log('result', results)
+
 })
 
 app.get('/userNames',async(req, res)=>{
